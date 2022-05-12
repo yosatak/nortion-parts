@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+  <body>
+    <div
+      x-data="{
+        start_unixtime: new URLSearchParams(location.search).get('start_unixtime'),
+        finish_unixtime: new URLSearchParams(location.search).get('finish_unixtime'),
+        title: new URLSearchParams(location.search).get('title'),
+        now: new Date().getTime()/1000
+      }"
+    >
+      <label x-text="title"></label>
+      <progress id="progress" max="1" x-bind:value="(now - start_unixtime) / (finish_unixtime - start_unixtime)">
+      </progress>
+      <label x-text="((now - start_unixtime) / (finish_unixtime - start_unixtime) * 100).toPrecision(6) + '%'"></label>
+    </div>
+  </body>
+</html>
