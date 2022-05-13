@@ -1,20 +1,35 @@
 <html>
   <head>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+      function component() {
+	  return {
+              title: new URLSearchParams(location.search).get('title'),
+              now: new Date().getTime()/1000,
+	      percent: 0,
+	      timerId: 0,
+	      tick() {
+		  this.percent = ((new Date().getTime()/1000 - new URLSearchParams(location.search).get('start_unixtime'))
+		      / (new URLSearchParams(location.search).get('finish_unixtime') - new URLSearchParams(location.search).get('start_unixtime')) * 100).toPrecision(7)
+	      },
+	      start() {
+		  this.tick = this.tick.bind(this);
+		  this.timerId = setInterval(this.tick, 1000);
+	      }
+	  }
+      }
+    </script>
   </head>
   <body>
     <div
-      x-data="{
-        start_unixtime: new URLSearchParams(location.search).get('start_unixtime'),
-        finish_unixtime: new URLSearchParams(location.search).get('finish_unixtime'),
-        title: new URLSearchParams(location.search).get('title'),
-        now: new Date().getTime()/1000
-      }"
+      x-data="component()"
+      x-cloak
+      x-init="() => { start() }"
     >
       <label x-text="title"></label>
-      <progress id="progress" max="1" x-bind:value="(now - start_unixtime) / (finish_unixtime - start_unixtime)">
+      <progress id="progress" max="100" x-bind:value="percent">
       </progress>
-      <label x-text="((now - start_unixtime) / (finish_unixtime - start_unixtime) * 100).toPrecision(6) + '%'"></label>
+      <label x-text="`${percent}%`">
     </div>
   </body>
 </html>
